@@ -4,48 +4,69 @@ import 'package:flutter/material.dart';
 class ColorSchemes {
   ColorSchemes._();
 
-  // ========== 6 مخططات ألوان ==========
+  // ========== 9 مخططات ألوان ==========
 
   /// 1. الأخضر الإسلامي (الافتراضي)
   static const ColorScheme islamicGreen = ColorScheme(
     primary: Color(0xFF2E7D32),
-    secondary: Color(0xFF388E3C),
+    secondary: Color(0xFF66BB6A),
     name: 'الأخضر الإسلامي',
   );
 
-  /// 2. الأزرق الهادئ
+  /// 2. الأزرق السماوي
   static const ColorScheme calmBlue = ColorScheme(
     primary: Color(0xFF1976D2),
-    secondary: Color(0xFF42A5F5),
-    name: 'الأزرق الهادئ',
+    secondary: Color(0xFF64B5F6),
+    name: 'الأزرق السماوي',
   );
 
   /// 3. البنفسجي الروحاني
   static const ColorScheme spiritualPurple = ColorScheme(
     primary: Color(0xFF6A1B9A),
-    secondary: Color(0xFF9C27B0),
+    secondary: Color(0xFFAB47BC),
     name: 'البنفسجي الروحاني',
   );
 
-  /// 4. البرتقالي الدافئ
-  static const ColorScheme warmOrange = ColorScheme(
-    primary: Color(0xFFE65100),
-    secondary: Color(0xFFFF6F00),
-    name: 'البرتقالي الدافئ',
+  /// 4. الازرق الأنيق
+  static const ColorScheme elegantBlack = ColorScheme(
+    primary: Color.fromARGB(255, 99, 37, 255),
+    secondary: Color.fromARGB(255, 43, 0, 255),
+    name: 'الأزرق  الأنيق ',
   );
 
-  /// 5. البني الطبيعي
+  /// 5. البني الترابي
   static const ColorScheme naturalBrown = ColorScheme(
-    primary: Color(0xFF5D4037),
-    secondary: Color(0xFF795548),
-    name: 'البني الطبيعي',
+    primary: Color(0xFF3E2723),
+    secondary: Color(0xFF6D4C41),
+    name: 'البني الترابي',
   );
 
-  /// 6. الأزرق الداكن الأنيق
+  /// 6. الأزرق الملكي
   static const ColorScheme elegantDarkBlue = ColorScheme(
-    primary: Color(0xFF0D47A1),
-    secondary: Color(0xFF1565C0),
-    name: 'الأزرق الداكن',
+    primary: Color(0xFF283593),
+    secondary: Color(0xFF5C6BC0),
+    name: 'الأزرق الملكي',
+  );
+
+  /// 7. الليموني المنعش
+  static const ColorScheme freshLime = ColorScheme(
+    primary: Color(0xFF9E9D24),
+    secondary: Color(0xFFDCE775),
+    name: 'الليموني المنعش',
+  );
+
+  /// 8. الفيروزي الأنيق
+  static const ColorScheme elegantTeal = ColorScheme(
+    primary: Color(0xFF00796B),
+    secondary: Color(0xFF4DB6AC),
+    name: 'الفيروزي الأنيق',
+  );
+
+  /// 9. الذهبي الفاخر
+  static const ColorScheme luxuryGold = ColorScheme(
+    primary: Color(0xFFF57F17),
+    secondary: Color(0xFFFFD54F),
+    name: 'الذهبي الفاخر',
   );
 
   /// قائمة جميع المخططات
@@ -53,9 +74,12 @@ class ColorSchemes {
     islamicGreen,
     calmBlue,
     spiritualPurple,
-    warmOrange,
+    elegantBlack,
     naturalBrown,
     elegantDarkBlue,
+    freshLime,
+    elegantTeal,
+    luxuryGold,
   ];
 
   /// الحصول على مخطط حسب الاسم

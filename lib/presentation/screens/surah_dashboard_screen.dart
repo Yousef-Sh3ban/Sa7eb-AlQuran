@@ -62,12 +62,37 @@ class _SurahDashboardScreenState extends State<SurahDashboardScreen>
     setState(() => _isLoading = true);
 
     try {
+      print('🔍 Loading surah with ID: ${widget.surahId}');
       final surah = await _surahRepo.getSurahById(widget.surahId);
+
+      if (surah == null) {
+        print('❌ Surah not found with ID: ${widget.surahId}');
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+        return;
+      }
+
+      print('✅ Surah found: ${surah.nameArabic}');
+
       final questionRepo = QuestionRepository(_database);
       final progressRepo = UserProgressRepository(_database);
 
-      await questionRepo.loadQuestionsFromAssets();
+      // تحميل الأسئلة مرة واحدة فقط عند أول استخدام
+      final questionsCount = await _database.getQuestionsCount();
+      if (questionsCount == 0) {
+        print('📥 First time: Loading all questions from assets...');
+        await questionRepo.loadQuestionsFromAssets();
+      } else {
+        print(
+          '✅ Questions already loaded ($questionsCount questions in database)',
+        );
+      }
+
+      print('🔎 Getting questions for surah ${widget.surahId}...');
       final questions = await questionRepo.getQuestionsBySurah(widget.surahId);
+      print('📊 Found ${questions.length} questions');
+
       final questionIds = questions.map((q) => q.id).toList();
       final stats = await progressRepo.getSurahStats(
         widget.surahId,
@@ -111,9 +136,12 @@ class _SurahDashboardScreenState extends State<SurahDashboardScreen>
             _badgeController.repeat();
           }
         });
+
+        print('✅ Dashboard loaded successfully');
       }
-    } catch (e) {
-      debugPrint('Error loading surah data: $e');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error loading surah data: $e');
+      debugPrint('Stack trace: $stackTrace');
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -164,33 +192,39 @@ class _SurahDashboardScreenState extends State<SurahDashboardScreen>
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // 1. رأس الصفحة (Header - الهوية)
-            _buildHeader(theme),
-
-            const SizedBox(height: AppColors.spacingLarge),
-
-            // 2. لوحة الإنجاز (Stats Dashboard)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppColors.spacingLarge,
+        physics: const BouncingScrollPhysics(
+          decelerationRate: ScrollDecelerationRate.fast,
+        ),
+        child: Container(
+          color: theme.colorScheme.surface,
+          child: Column(
+            children: [
+              // 1. رأس الصفحة (Header - الهوية)
+              _buildHeader(theme),
+          
+              const SizedBox(height: AppColors.spacingLarge),
+          
+              // 2. لوحة الإنجاز (Stats Dashboard)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppColors.spacingLarge,
+                ),
+                child: _buildStatsDashboard(theme),
               ),
-              child: _buildStatsDashboard(theme),
-            ),
-
-            const SizedBox(height: AppColors.spacingXXLarge),
-
-            // 3. منطقة الأزرار الذكية (Smart Actions)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppColors.spacingLarge,
+          
+              const SizedBox(height: AppColors.spacingXXLarge),
+          
+              // 3. منطقة الأزرار الذكية (Smart Actions)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppColors.spacingLarge,
+                ),
+                child: _buildSmartActions(theme),
               ),
-              child: _buildSmartActions(theme),
-            ),
-
-            const SizedBox(height: AppColors.spacingXXLarge),
-          ],
+          
+              const SizedBox(height: AppColors.spacingXXLarge),
+            ],
+          ),
         ),
       ),
     );
@@ -230,7 +264,9 @@ class _SurahDashboardScreenState extends State<SurahDashboardScreen>
                   _surah!.nameArabic,
                   style: theme.textTheme.displaySmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'SurahNameMadina',
+                    fontSize: 70,
                   ),
                 ),
               ),
@@ -599,11 +635,7 @@ class _SurahDashboardScreenState extends State<SurahDashboardScreen>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.emoji_events,
-                    color: AppColors.success,
-                    size: 20,
-                  ),
+                  Icon(Icons.emoji_events, color: AppColors.success, size: 20),
                   const SizedBox(width: AppColors.spacingSmall),
                   Text(
                     'مبارك! أتقنت هذه السورة 🎉',

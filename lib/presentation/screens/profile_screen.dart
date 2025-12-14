@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/themes/app_colors.dart';
 import '../../data/repositories/user_profile_repository.dart';
@@ -17,7 +18,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final UserProfileRepository _profileRepo = UserProfileRepository();
   late final UserProgressRepository _progressRepo;
-  
+
   // البيانات الحقيقية
   String _userName = 'طالب العلم';
   String? _userImage;
@@ -41,45 +42,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
   /// تحميل البيانات من قاعدة البيانات و SharedPreferences
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // تحميل بيانات الملف الشخصي
       _userName = await _profileRepo.getUserName();
       _userImage = await _profileRepo.getUserImage();
       _weekActivity = await _profileRepo.getWeekActivity();
-      
+
       // تحميل الإحصائيات من قاعدة البيانات
       final stats = await _progressRepo.getOverallStats();
       _totalQuestions = stats['totalQuestions'] ?? 0;
       _answeredQuestions = stats['answeredQuestions'] ?? 0;
       _correctAnswers = stats['correctAnswers'] ?? 0;
-      
+
       // حساب الدقة
-      _accuracy = _answeredQuestions > 0 
-          ? (_correctAnswers / _answeredQuestions) * 100 
+      _accuracy = _answeredQuestions > 0
+          ? (_correctAnswers / _answeredQuestions) * 100
           : 0.0;
-      
+
       // الحصول على اللقب بناءً على عدد الأسئلة المُجابة
       _userTitle = _profileRepo.getUserTitle(_answeredQuestions);
-      
+
       // حساب سلسلة الأيام المتتالية
       _dayStreak = _calculateDayStreak();
-      
+
       // حساب عدد السور المكتملة (TODO: تنفيذ منطق حقيقي)
       _completedSurahs = 0;
-      
     } catch (e) {
       debugPrint('Error loading profile data: $e');
     }
-    
+
     setState(() => _isLoading = false);
   }
-  
+
   /// حساب عدد الأيام المتتالية
   int _calculateDayStreak() {
     int streak = 0;
     final today = DateTime.now().weekday - 1; // 0 = Monday
-    
+
     // Count backwards from today
     for (int i = today; i >= 0; i--) {
       if (_weekActivity[i]) {
@@ -88,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         break;
       }
     }
-    
+
     return streak;
   }
 
@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       maxHeight: 800,
       imageQuality: 85,
     );
-    
+
     if (image != null) {
       await _profileRepo.setUserImage(image.path);
       setState(() {
@@ -109,11 +109,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
-  
+
   /// تعديل الاسم
   Future<void> _editName() async {
-    final TextEditingController controller = TextEditingController(text: _userName);
-    
+    final TextEditingController controller = TextEditingController(
+      text: _userName,
+    );
+
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -141,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
-    
+
     if (result != null && result.isNotEmpty) {
       await _profileRepo.setUserName(result);
       setState(() {
@@ -149,11 +151,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
-  
+
   /// عرض قواعد الترقية
   void _showTitleRules() {
     final rules = _profileRepo.getTitleRules();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -162,7 +164,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         title: Row(
           children: [
-            Icon(Icons.info_outline, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.info_outline,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(width: AppColors.spacingSmall),
             const Text('قواعد الترقية'),
           ],
@@ -174,9 +179,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final from = rule['from'] as int;
               final to = rule['to'] as int?;
               final title = rule['title'] as String;
-              
+
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppColors.spacingSmall),
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppColors.spacingSmall,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -257,55 +264,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    
+
     return Scaffold(
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // القسم العلوي: رأس الملف الشخصي مع تدرج لوني
             _buildProfileHeader(theme),
-            
+
             const SizedBox(height: AppColors.spacingLarge),
-            
+
             // نشاط الأسبوع
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppColors.spacingLarge),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppColors.spacingLarge,
+              ),
               child: _buildWeeklyActivity(theme),
             ),
-            
+
             const SizedBox(height: AppColors.spacingLarge),
-            
+
             // إحصائيات التعلم
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppColors.spacingLarge),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppColors.spacingLarge,
+              ),
               child: _buildLearningStatistics(theme),
             ),
-            
+
             const SizedBox(height: AppColors.spacingLarge),
-            
+
             // زر الأسئلة المحفوظة
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppColors.spacingLarge),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppColors.spacingLarge,
+              ),
               child: _buildSavedQuestionsButton(theme),
             ),
-            
+
             const SizedBox(height: AppColors.spacingLarge),
-            
+
             // الإنجازات
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppColors.spacingLarge),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppColors.spacingLarge,
+              ),
               child: _buildAchievements(theme),
             ),
-            
+
             const SizedBox(height: AppColors.spacingXXLarge),
           ],
         ),
@@ -320,10 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
+          colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
         ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(AppColors.radiusXLarge),
@@ -342,10 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white,
-                width: 4,
-              ),
+              border: Border.all(color: Colors.white, width: 4),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -359,7 +365,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.white,
-                  backgroundImage: _userImage != null ? FileImage(File(_userImage!)) : null,
+                  backgroundImage: _userImage != null
+                      ? FileImage(File(_userImage!))
+                      : null,
                   child: _userImage == null
                       ? Icon(
                           Icons.person,
@@ -392,7 +400,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: AppColors.spacingLarge),
-          
+
           // الاسم مع زر التعديل
           InkWell(
             onTap: _editName,
@@ -407,16 +415,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(width: AppColors.spacingSmall),
-                const Icon(
-                  Icons.edit,
-                  size: 20,
-                  color: Colors.white,
-                ),
+                const Icon(Icons.edit, size: 20, color: Colors.white),
               ],
             ),
           ),
           const SizedBox(height: AppColors.spacingSmall),
-          
+
           // اللقب مع علامة التعجب للقواعد
           InkWell(
             onTap: _showTitleRules,
@@ -436,17 +440,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.info,
-                    size: 14,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.info, size: 14, color: Colors.white),
                 ),
               ],
             ),
           ),
           const SizedBox(height: AppColors.spacingXXLarge),
-          
+
           // بطاقات الإحصائيات السريعة
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -551,10 +551,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(7, (index) {
-                final dayName = ['إث', 'ثل', 'أرب', 'خم', 'جم', 'سب', 'أحد'][index];
+                final dayName = [
+                  'إث',
+                  'ثل',
+                  'أرب',
+                  'خم',
+                  'جم',
+                  'سب',
+                  'أحد',
+                ][index];
                 final isCompleted = _weekActivity[index];
                 final isCurrent = (DateTime.now().weekday - 1) == index;
-                
+
                 return _buildDayIndicator(
                   theme,
                   day: dayName,
@@ -583,11 +591,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else if (isCompleted) {
       circleColor = theme.colorScheme.primary;
     } else if (isCurrent) {
-      circleColor = theme.colorScheme.primaryContainer; // لون مختلف لليوم الحالي غير المكتمل
+      circleColor = theme
+          .colorScheme
+          .primaryContainer; // لون مختلف لليوم الحالي غير المكتمل
     } else {
       circleColor = theme.colorScheme.surfaceContainerHighest;
     }
-    
+
     return Column(
       children: [
         Container(
@@ -597,10 +607,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             shape: BoxShape.circle,
             color: circleColor,
             border: isCurrent
-                ? Border.all(
-                    color: Colors.amber,
-                    width: 2.5,
-                  )
+                ? Border.all(color: Colors.amber, width: 2.5)
                 : null,
             boxShadow: isCurrent
                 ? [
@@ -728,7 +735,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: color,
               borderRadius: BorderRadius.circular(AppColors.radiusSmall),
             ),
-            child: Icon(icon, color: Colors.white, size: AppColors.iconSizeMedium),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: AppColors.iconSizeMedium,
+            ),
           ),
           const SizedBox(width: AppColors.spacingMedium),
           Expanded(
@@ -767,13 +778,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSavedQuestionsButton(ThemeData theme) {
     return ElevatedButton.icon(
       onPressed: () {
-        // TODO: الانتقال إلى صفحة الأسئلة المحفوظة
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('ستتم إضافة صفحة الأسئلة المحفوظة قريباً'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        context.push('/saved-questions');
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: AppColors.spacingLarge),
@@ -869,13 +874,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   size: AppColors.iconSizeLarge,
                   color: unlocked
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.3,
+                        ),
                 ),
                 if (!unlocked)
                   Icon(
                     Icons.lock,
                     size: AppColors.iconSizeSmall,
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.5,
+                    ),
                   ),
                 if (unlocked)
                   Positioned(

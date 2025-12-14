@@ -18,7 +18,7 @@ class AppConstants {
   static const String keyIsGuestMode = 'is_guest_mode';
 
   // Quiz Settings
-  static const int questionsPerSession = 10;
+  static const int questionsPerSession = 60;
   static const int signUpPromptThreshold = 50;
 
   // Database

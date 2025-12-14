@@ -57,6 +57,8 @@ class SurahCard extends StatelessWidget {
                       surah.nameArabic,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'SurahNameMadina',
+                        fontSize: 40,
                       ),
                     ),
                     const SizedBox(height: 6),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sa7eb_alquran/core/services/app_settings_service.dart';
+import 'package:sa7eb_alquran/core/services/sound_service.dart';
 import 'package:sa7eb_alquran/presentation/screens/profile_screen.dart';
 import '../../data/repositories/surah_repository.dart';
 import '../../data/repositories/user_progress_repository.dart';
@@ -45,18 +47,36 @@ class _MainNavigatorState extends State<MainNavigator> {
         indicatorColor: Theme.of(context).colorScheme.primaryContainer,
         destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            selectedIcon: Icon(Icons.home, color: Theme.of(context).colorScheme.onPrimaryContainer),
+            icon: Icon(
+              Icons.home_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            selectedIcon: Icon(
+              Icons.home,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
             label: 'الرئيسية',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            selectedIcon: Icon(Icons.person, color: Theme.of(context).colorScheme.onPrimaryContainer),
+            icon: Icon(
+              Icons.person_outline,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            selectedIcon: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
             label: 'الملف الشخصي',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            selectedIcon: Icon(Icons.settings, color: Theme.of(context).colorScheme.onPrimaryContainer),
+            icon: Icon(
+              Icons.settings_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            selectedIcon: Icon(
+              Icons.settings,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
             label: 'الإعدادات',
           ),
         ],
@@ -201,7 +221,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     )
                                   : null,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  AppColors.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: AppColors.withOpacity(
                                     Theme.of(context).colorScheme.outline,
@@ -211,7 +233,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  AppColors.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Theme.of(context).colorScheme.primary,
                                   width: 2,
@@ -219,7 +243,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               ),
                               filled: true,
                               fillColor: Colors.transparent,
-                              contentPadding: EdgeInsets.symmetric(vertical: AppColors.spacingSmall),
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: AppColors.spacingSmall,
+                              ),
                             ),
                             onChanged: _filterSurahs,
                           ),
@@ -228,16 +254,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         // زر الترتيب
                         Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(
+                              AppColors.radiusMedium,
+                            ),
                           ),
                           child: IconButton(
                             icon: Icon(
-                              _isAscending ? Icons.arrow_downward : Icons.arrow_upward,
-                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              _isAscending
+                                  ? Icons.arrow_downward
+                                  : Icons.arrow_upward,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
                             ),
                             onPressed: _toggleSortOrder,
-                            tooltip: _isAscending ? 'ترتيب تنازلي' : 'ترتيب تصاعدي',
+                            tooltip: _isAscending
+                                ? 'ترتيب تنازلي'
+                                : 'ترتيب تصاعدي',
                           ),
                         ),
                       ],
@@ -261,9 +297,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               Icon(
                                 Icons.search_off,
                                 size: 64,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(height: 16),
                               Text(
@@ -274,6 +310,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         )
                       : ListView.builder(
+                          physics: const BouncingScrollPhysics(
+                            decelerationRate: ScrollDecelerationRate.fast,
+                          ),
                           itemCount: _filteredSurahs.length,
                           itemBuilder: (context, index) {
                             final surah = _filteredSurahs[index];
@@ -301,106 +340,203 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 }
 
-
 /// Settings Screen
 class SettingsScreenPlaceholder extends StatefulWidget {
   const SettingsScreenPlaceholder({super.key});
 
   @override
-  State<SettingsScreenPlaceholder> createState() => _SettingsScreenPlaceholderState();
+  State<SettingsScreenPlaceholder> createState() =>
+      _SettingsScreenPlaceholderState();
 }
 
 class _SettingsScreenPlaceholderState extends State<SettingsScreenPlaceholder> {
+  final AppSettingsService _settingsService = AppSettingsService.instance;
+  final SoundService _soundService = SoundService.instance;
+
+  bool _soundEnabled = true;
+  double _fontSize = 1.0;
+  bool _loadingSettings = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    await _settingsService.init();
+    final soundEnabled = _settingsService.getSoundEnabled();
+    final fontSize = _settingsService.getFontSize();
+    _soundService.setEnabled(soundEnabled);
+    if (!mounted) return;
+    setState(() {
+      _soundEnabled = soundEnabled;
+      _fontSize = fontSize;
+      _loadingSettings = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
+        child: _loadingSettings
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                physics: const BouncingScrollPhysics(
+                  decelerationRate: ScrollDecelerationRate.fast,
+                ),
+                padding: const EdgeInsets.all(16),
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.secondary,
-                        ],
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.settings,
-                      size: 40,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.secondary,
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.settings,
+                            size: 40,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'الإعدادات',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  // المظهر
+                  _SettingsSection(
+                    title: 'المظهر',
+                    icon: Icons.palette,
+                    children: [
+                      _SettingsTile(
+                        title: 'الوضع الداكن',
+                        subtitle: isDarkMode ? 'مفعّل' : 'غير مفعّل',
+                        leading: Icon(
+                          isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        trailing: Switch(
+                          value: isDarkMode,
+                          onChanged: (value) {
+                            main_app.MyApp.of(
+                              context,
+                            )?.setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+                          },
+                        ),
+                      ),
+                      _ColorSchemeSelector(),
+                    ],
+                  ),
                   const SizedBox(height: 16),
-                  Text(
-                    'الإعدادات',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // الصوت والخط
+                  _SettingsSection(
+                    title: 'الصوت والخط',
+                    icon: Icons.hearing,
+                    children: [
+                      _SettingsTile(
+                        title: 'تفعيل الأصوات',
+                        subtitle: _soundEnabled ? 'مفعّل' : 'غير مفعّل',
+                        leading: Icon(
+                          Icons.volume_up,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        trailing: Switch(
+                          value: _soundEnabled,
+                          onChanged: (value) async {
+                            setState(() => _soundEnabled = value);
+                            _soundService.setEnabled(value);
+                            await _settingsService.setSoundEnabled(value);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'حجم الخط',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                Text('${(_fontSize * 100).round()}%'),
+                              ],
+                            ),
+                            Slider(
+                              value: _fontSize,
+                              min: 0.8,
+                              max: 1.5,
+                              divisions: 14,
+                              label: '${(_fontSize * 100).round()}%',
+                              onChanged: (value) {
+                                setState(() => _fontSize = value);
+                              },
+                              onChangeEnd: (value) async {
+                                await _settingsService.setFontSize(value);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // حول التطبيق
+                  _SettingsSection(
+                    title: 'حول التطبيق',
+                    icon: Icons.info,
+                    children: [
+                      _SettingsTile(
+                        title: 'الإصدار',
+                        subtitle: '1.0.0',
+                        leading: Icon(
+                          Icons.apps,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      _SettingsTile(
+                        title: 'المطور',
+                        subtitle: 'صاحب القرآن',
+                        leading: Icon(
+                          Icons.code,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 8),
-            // المظهر
-            _SettingsSection(
-              title: 'المظهر',
-              icon: Icons.palette,
-              children: [
-                _SettingsTile(
-                  title: 'الوضع الداكن',
-                  subtitle: isDarkMode ? 'مفعّل' : 'غير مفعّل',
-                  leading: Icon(
-                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  trailing: Switch(
-                    value: isDarkMode,
-                    onChanged: (value) {
-                      main_app.MyApp.of(context)?.setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
-                    },
-                  ),
-                ),
-                _ColorSchemeSelector(),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // حول التطبيق
-            _SettingsSection(
-              title: 'حول التطبيق',
-              icon: Icons.info,
-              children: [
-                _SettingsTile(
-                  title: 'الإصدار',
-                  subtitle: '1.0.0',
-                  leading: Icon(
-                    Icons.apps,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                _SettingsTile(
-                  title: 'المطور',
-                  subtitle: 'صاحب القرآن',
-                  leading: Icon(
-                    Icons.code,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -445,9 +581,7 @@ class _SettingsSection extends StatelessWidget {
         Card(
           elevation: 0,
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: Column(
-            children: children,
-          ),
+          child: Column(children: children),
         ),
       ],
     );
@@ -478,10 +612,7 @@ class _SettingsTile extends StatelessWidget {
         ),
       ),
       subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: Theme.of(context).textTheme.bodySmall,
-            )
+          ? Text(subtitle!, style: Theme.of(context).textTheme.bodySmall)
           : null,
       leading: leading,
       trailing: trailing,
@@ -501,18 +632,15 @@ class _ColorSchemeSelector extends StatelessWidget {
         children: [
           Text(
             'اختر لون التطبيق',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 12,
             runSpacing: 12,
-            children: List.generate(
-              6,
-              (index) => _ColorOption(index: index),
-            ),
+            children: List.generate(9, (index) => _ColorOption(index: index)),
           ),
         ],
       ),
@@ -528,7 +656,8 @@ class _ColorOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = app_color_schemes.ColorSchemes.getSchemeByIndex(index);
-    final isSelected = Theme.of(context).colorScheme.primary.value == scheme.primary.value;
+    final isSelected =
+        Theme.of(context).colorScheme.primary.value == scheme.primary.value;
 
     return InkWell(
       onTap: () {
@@ -555,10 +684,7 @@ class _ColorOption extends StatelessWidget {
               height: 50,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    scheme.primary,
-                    scheme.secondary,
-                  ],
+                  colors: [scheme.primary, scheme.secondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -572,11 +698,7 @@ class _ColorOption extends StatelessWidget {
                 ],
               ),
               child: isSelected
-                  ? const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 24,
-                    )
+                  ? const Icon(Icons.check, color: Colors.white, size: 24)
                   : null,
             ),
             const SizedBox(height: 8),

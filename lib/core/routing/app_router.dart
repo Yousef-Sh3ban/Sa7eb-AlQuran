@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/surah_dashboard_screen.dart';
 import '../../presentation/screens/quiz_screen.dart';
+import '../../presentation/screens/saved_questions_screen.dart';
 
 /// Application routing configuration using GoRouter.
 class AppRouter {
@@ -42,6 +43,11 @@ class AppRouter {
                 },
               ),
             ],
+          ),
+          GoRoute(
+            path: 'saved-questions',
+            name: 'savedQuestions',
+            builder: (context, state) => const SavedQuestionsScreen(),
           ),
         ],
       ),

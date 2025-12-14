@@ -14,6 +14,15 @@ class UserProgressRepository {
     return progress != null ? _mapToModel(progress) : null;
   }
 
+  /// Get progress for multiple questions in a single query (efficient)
+  Future<Map<String, UserProgressModel>> getProgressBatch(
+      List<String> questionIds) async {
+    final progressList = await _database.getProgressBatch(questionIds);
+    return Map.fromEntries(
+      progressList.map((p) => MapEntry(p.questionId, _mapToModel(p))),
+    );
+  }
+
   /// Update progress for a question
   Future<void> updateProgress(UserProgressModel progress) async {
     await _database.upsertProgress(

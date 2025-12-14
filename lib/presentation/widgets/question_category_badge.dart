@@ -4,10 +4,7 @@ import '../../core/themes/question_category_colors.dart';
 
 /// Badge widget for displaying question category
 class QuestionCategoryBadge extends StatelessWidget {
-  const QuestionCategoryBadge({
-    required this.category,
-    super.key,
-  });
+  const QuestionCategoryBadge({required this.category, super.key});
 
   final QuestionCategory category;
 
@@ -17,23 +14,18 @@ class QuestionCategoryBadge extends StatelessWidget {
     final categoryColor = _getCategoryColor(colors);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: categoryColor,
+        color: categoryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            category.icon,
-            style: const TextStyle(fontSize: 16),
-          ),
-          const SizedBox(width: 6),
-          Text(
             category.displayName,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: categoryColor,
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),

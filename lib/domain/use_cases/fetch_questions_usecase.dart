@@ -30,12 +30,16 @@ class FetchQuestionsUseCase {
       return shuffled.take(limit).toList();
     }
 
+    // Fetch all progress in a single batch query (fixed N+1 problem)
+    final questionIds = allQuestions.map((q) => q.id).toList();
+    final progressMap = await _progressRepo.getProgressBatch(questionIds);
+
     // Retry Mode: فقط الأسئلة الخاطئة
     if (retryMode) {
       final List<QuestionModel> incorrectQuestions = [];
       
       for (final QuestionModel question in allQuestions) {
-        final progress = await _progressRepo.getProgress(question.id);
+        final progress = progressMap[question.id];
         if (progress != null && progress.status == 1) {
           incorrectQuestions.add(question);
         }
@@ -49,7 +53,7 @@ class FetchQuestionsUseCase {
     final List<QuestionModel> newQuestions = [];
 
     for (final QuestionModel question in allQuestions) {
-      final progress = await _progressRepo.getProgress(question.id);
+      final progress = progressMap[question.id];
 
       if (progress == null) {
         newQuestions.add(question);

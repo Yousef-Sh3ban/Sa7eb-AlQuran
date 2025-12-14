@@ -38,6 +38,14 @@ dependencies:
   http: ^1.2.2
 
   flutter_svg: ^2.2.3
+  url_launcher: ^6.2.5
+  
+  # Haptic Feedback & Audio
+  vibration: ^2.0.0
+  audioplayers: ^6.1.0
+  
+  # Animations
+  confetti: ^0.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,31 +69,15 @@ flutter:
 
   # Assets
   assets:
-    - assets/data/dummy_questions.json
+    - assets/data/tafseer_database.json
     - assets/data/all_surahs.json
 
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
+  # Fonts
+  fonts:
+    - family: UthmanicHafs
+      fonts:
+        - asset: assets/fonts/uthmanic_hafs_v22.ttf
 
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+    - family: SurahNameMadina
+      fonts:
+        - asset: assets/fonts/Surah_Name_Madina.ttf

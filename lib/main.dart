@@ -4,9 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/routing/app_router.dart';
 import 'core/themes/app_theme.dart';
 import 'core/themes/color_schemes.dart' as app_color_schemes;
+import 'core/services/app_settings_service.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();  
+  
+  // تهيئة الإعدادات
+  await AppSettingsService.instance.init();
+  
   final prefs = await SharedPreferences.getInstance();
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
   final colorSchemeIndex = prefs.getInt('colorSchemeIndex') ?? 0;

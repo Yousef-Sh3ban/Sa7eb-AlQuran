@@ -808,16 +808,242 @@ class UserProgressCompanion extends UpdateCompanion<UserProgressData> {
   }
 }
 
+class $SavedQuestionsTable extends SavedQuestions
+    with TableInfo<$SavedQuestionsTable, SavedQuestion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedQuestionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _questionIdMeta = const VerificationMeta(
+    'questionId',
+  );
+  @override
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+    'question_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES questions (id)',
+    ),
+  );
+  static const VerificationMeta _savedAtMeta = const VerificationMeta(
+    'savedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> savedAt = GeneratedColumn<DateTime>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [questionId, savedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_questions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedQuestion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('question_id')) {
+      context.handle(
+        _questionIdMeta,
+        questionId.isAcceptableOrUnknown(data['question_id']!, _questionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_questionIdMeta);
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(
+        _savedAtMeta,
+        savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questionId};
+  @override
+  SavedQuestion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedQuestion(
+      questionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}question_id'],
+      )!,
+      savedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}saved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedQuestionsTable createAlias(String alias) {
+    return $SavedQuestionsTable(attachedDatabase, alias);
+  }
+}
+
+class SavedQuestion extends DataClass implements Insertable<SavedQuestion> {
+  final String questionId;
+  final DateTime savedAt;
+  const SavedQuestion({required this.questionId, required this.savedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['question_id'] = Variable<String>(questionId);
+    map['saved_at'] = Variable<DateTime>(savedAt);
+    return map;
+  }
+
+  SavedQuestionsCompanion toCompanion(bool nullToAbsent) {
+    return SavedQuestionsCompanion(
+      questionId: Value(questionId),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory SavedQuestion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedQuestion(
+      questionId: serializer.fromJson<String>(json['questionId']),
+      savedAt: serializer.fromJson<DateTime>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'questionId': serializer.toJson<String>(questionId),
+      'savedAt': serializer.toJson<DateTime>(savedAt),
+    };
+  }
+
+  SavedQuestion copyWith({String? questionId, DateTime? savedAt}) =>
+      SavedQuestion(
+        questionId: questionId ?? this.questionId,
+        savedAt: savedAt ?? this.savedAt,
+      );
+  SavedQuestion copyWithCompanion(SavedQuestionsCompanion data) {
+    return SavedQuestion(
+      questionId: data.questionId.present
+          ? data.questionId.value
+          : this.questionId,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedQuestion(')
+          ..write('questionId: $questionId, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(questionId, savedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedQuestion &&
+          other.questionId == this.questionId &&
+          other.savedAt == this.savedAt);
+}
+
+class SavedQuestionsCompanion extends UpdateCompanion<SavedQuestion> {
+  final Value<String> questionId;
+  final Value<DateTime> savedAt;
+  final Value<int> rowid;
+  const SavedQuestionsCompanion({
+    this.questionId = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavedQuestionsCompanion.insert({
+    required String questionId,
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : questionId = Value(questionId);
+  static Insertable<SavedQuestion> custom({
+    Expression<String>? questionId,
+    Expression<DateTime>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (questionId != null) 'question_id': questionId,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavedQuestionsCompanion copyWith({
+    Value<String>? questionId,
+    Value<DateTime>? savedAt,
+    Value<int>? rowid,
+  }) {
+    return SavedQuestionsCompanion(
+      questionId: questionId ?? this.questionId,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<DateTime>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedQuestionsCompanion(')
+          ..write('questionId: $questionId, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $QuestionsTable questions = $QuestionsTable(this);
   late final $UserProgressTable userProgress = $UserProgressTable(this);
+  late final $SavedQuestionsTable savedQuestions = $SavedQuestionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [questions, userProgress];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    questions,
+    userProgress,
+    savedQuestions,
+  ];
 }
 
 typedef $$QuestionsTableCreateCompanionBuilder =
@@ -863,6 +1089,27 @@ final class $$QuestionsTableReferences
     ).filter((f) => f.questionId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_userProgressRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$SavedQuestionsTable, List<SavedQuestion>>
+  _savedQuestionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.savedQuestions,
+    aliasName: $_aliasNameGenerator(
+      db.questions.id,
+      db.savedQuestions.questionId,
+    ),
+  );
+
+  $$SavedQuestionsTableProcessedTableManager get savedQuestionsRefs {
+    final manager = $$SavedQuestionsTableTableManager(
+      $_db,
+      $_db.savedQuestions,
+    ).filter((f) => f.questionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_savedQuestionsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -929,6 +1176,31 @@ class $$QuestionsTableFilterComposer
           }) => $$UserProgressTableFilterComposer(
             $db: $db,
             $table: $db.userProgress,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> savedQuestionsRefs(
+    Expression<bool> Function($$SavedQuestionsTableFilterComposer f) f,
+  ) {
+    final $$SavedQuestionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedQuestions,
+      getReferencedColumn: (t) => t.questionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedQuestionsTableFilterComposer(
+            $db: $db,
+            $table: $db.savedQuestions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1044,6 +1316,31 @@ class $$QuestionsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> savedQuestionsRefs<T extends Object>(
+    Expression<T> Function($$SavedQuestionsTableAnnotationComposer a) f,
+  ) {
+    final $$SavedQuestionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedQuestions,
+      getReferencedColumn: (t) => t.questionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedQuestionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savedQuestions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$QuestionsTableTableManager
@@ -1059,7 +1356,10 @@ class $$QuestionsTableTableManager
           $$QuestionsTableUpdateCompanionBuilder,
           (Question, $$QuestionsTableReferences),
           Question,
-          PrefetchHooks Function({bool userProgressRefs})
+          PrefetchHooks Function({
+            bool userProgressRefs,
+            bool savedQuestionsRefs,
+          })
         > {
   $$QuestionsTableTableManager(_$AppDatabase db, $QuestionsTable table)
     : super(
@@ -1120,36 +1420,63 @@ class $$QuestionsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({userProgressRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (userProgressRefs) db.userProgress],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (userProgressRefs)
-                    await $_getPrefetchedData<
-                      Question,
-                      $QuestionsTable,
-                      UserProgressData
-                    >(
-                      currentTable: table,
-                      referencedTable: $$QuestionsTableReferences
-                          ._userProgressRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$QuestionsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).userProgressRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.questionId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({userProgressRefs = false, savedQuestionsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (userProgressRefs) db.userProgress,
+                    if (savedQuestionsRefs) db.savedQuestions,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (userProgressRefs)
+                        await $_getPrefetchedData<
+                          Question,
+                          $QuestionsTable,
+                          UserProgressData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$QuestionsTableReferences
+                              ._userProgressRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$QuestionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).userProgressRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.questionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savedQuestionsRefs)
+                        await $_getPrefetchedData<
+                          Question,
+                          $QuestionsTable,
+                          SavedQuestion
+                        >(
+                          currentTable: table,
+                          referencedTable: $$QuestionsTableReferences
+                              ._savedQuestionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$QuestionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savedQuestionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.questionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -1166,7 +1493,7 @@ typedef $$QuestionsTableProcessedTableManager =
       $$QuestionsTableUpdateCompanionBuilder,
       (Question, $$QuestionsTableReferences),
       Question,
-      PrefetchHooks Function({bool userProgressRefs})
+      PrefetchHooks Function({bool userProgressRefs, bool savedQuestionsRefs})
     >;
 typedef $$UserProgressTableCreateCompanionBuilder =
     UserProgressCompanion Function({
@@ -1471,6 +1798,275 @@ typedef $$UserProgressTableProcessedTableManager =
       UserProgressData,
       PrefetchHooks Function({bool questionId})
     >;
+typedef $$SavedQuestionsTableCreateCompanionBuilder =
+    SavedQuestionsCompanion Function({
+      required String questionId,
+      Value<DateTime> savedAt,
+      Value<int> rowid,
+    });
+typedef $$SavedQuestionsTableUpdateCompanionBuilder =
+    SavedQuestionsCompanion Function({
+      Value<String> questionId,
+      Value<DateTime> savedAt,
+      Value<int> rowid,
+    });
+
+final class $$SavedQuestionsTableReferences
+    extends BaseReferences<_$AppDatabase, $SavedQuestionsTable, SavedQuestion> {
+  $$SavedQuestionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $QuestionsTable _questionIdTable(_$AppDatabase db) =>
+      db.questions.createAlias(
+        $_aliasNameGenerator(db.savedQuestions.questionId, db.questions.id),
+      );
+
+  $$QuestionsTableProcessedTableManager get questionId {
+    final $_column = $_itemColumn<String>('question_id')!;
+
+    final manager = $$QuestionsTableTableManager(
+      $_db,
+      $_db.questions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_questionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SavedQuestionsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedQuestionsTable> {
+  $$SavedQuestionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$QuestionsTableFilterComposer get questionId {
+    final $$QuestionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.questionId,
+      referencedTable: $db.questions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuestionsTableFilterComposer(
+            $db: $db,
+            $table: $db.questions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedQuestionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedQuestionsTable> {
+  $$SavedQuestionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$QuestionsTableOrderingComposer get questionId {
+    final $$QuestionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.questionId,
+      referencedTable: $db.questions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuestionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.questions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedQuestionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedQuestionsTable> {
+  $$SavedQuestionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+
+  $$QuestionsTableAnnotationComposer get questionId {
+    final $$QuestionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.questionId,
+      referencedTable: $db.questions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuestionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.questions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedQuestionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedQuestionsTable,
+          SavedQuestion,
+          $$SavedQuestionsTableFilterComposer,
+          $$SavedQuestionsTableOrderingComposer,
+          $$SavedQuestionsTableAnnotationComposer,
+          $$SavedQuestionsTableCreateCompanionBuilder,
+          $$SavedQuestionsTableUpdateCompanionBuilder,
+          (SavedQuestion, $$SavedQuestionsTableReferences),
+          SavedQuestion,
+          PrefetchHooks Function({bool questionId})
+        > {
+  $$SavedQuestionsTableTableManager(
+    _$AppDatabase db,
+    $SavedQuestionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedQuestionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedQuestionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedQuestionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> questionId = const Value.absent(),
+                Value<DateTime> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavedQuestionsCompanion(
+                questionId: questionId,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String questionId,
+                Value<DateTime> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavedQuestionsCompanion.insert(
+                questionId: questionId,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SavedQuestionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({questionId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (questionId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.questionId,
+                                referencedTable: $$SavedQuestionsTableReferences
+                                    ._questionIdTable(db),
+                                referencedColumn:
+                                    $$SavedQuestionsTableReferences
+                                        ._questionIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SavedQuestionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedQuestionsTable,
+      SavedQuestion,
+      $$SavedQuestionsTableFilterComposer,
+      $$SavedQuestionsTableOrderingComposer,
+      $$SavedQuestionsTableAnnotationComposer,
+      $$SavedQuestionsTableCreateCompanionBuilder,
+      $$SavedQuestionsTableUpdateCompanionBuilder,
+      (SavedQuestion, $$SavedQuestionsTableReferences),
+      SavedQuestion,
+      PrefetchHooks Function({bool questionId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1479,4 +2075,6 @@ class $AppDatabaseManager {
       $$QuestionsTableTableManager(_db, _db.questions);
   $$UserProgressTableTableManager get userProgress =>
       $$UserProgressTableTableManager(_db, _db.userProgress);
+  $$SavedQuestionsTableTableManager get savedQuestions =>
+      $$SavedQuestionsTableTableManager(_db, _db.savedQuestions);
 }

@@ -52,13 +52,13 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.amiri(
+            return GoogleFonts.notoKufiArabic(
               fontSize: AppColors.fontSizeBody,
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             );
           }
-          return GoogleFonts.amiri(
+          return GoogleFonts.notoKufiArabic(
             fontSize: AppColors.fontSizeBody,
             fontWeight: FontWeight.w500,
             color: colorScheme.onSurfaceVariant,
@@ -109,13 +109,13 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.amiri(
+            return GoogleFonts.notoKufiArabic(
               fontSize: AppColors.fontSizeBody,
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             );
           }
-          return GoogleFonts.amiri(
+          return GoogleFonts.notoKufiArabic(
             fontSize: AppColors.fontSizeBody,
             fontWeight: FontWeight.w500,
             color: colorScheme.onSurfaceVariant,
@@ -125,82 +125,82 @@ class AppTheme {
     );
   }
 
-  /// Build text theme with Arabic font (Amiri)
+  /// Build text theme with Arabic font (notoKufiArabic)
   static TextTheme _buildTextTheme(ColorScheme colorScheme) {
-    return GoogleFonts.amiriTextTheme(
+    return GoogleFonts.notoKufiArabicTextTheme(
       ThemeData(brightness: colorScheme.brightness).textTheme,
     ).copyWith(
-      displayLarge: GoogleFonts.amiri(
+      displayLarge: GoogleFonts.notoKufiArabic(
         fontSize: 57,
         fontWeight: FontWeight.bold,
         color: colorScheme.onSurface,
       ),
-      displayMedium: GoogleFonts.amiri(
+      displayMedium: GoogleFonts.notoKufiArabic(
         fontSize: 45,
         fontWeight: FontWeight.bold,
         color: colorScheme.onSurface,
       ),
-      displaySmall: GoogleFonts.amiri(
+      displaySmall: GoogleFonts.notoKufiArabic(
         fontSize: 36,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      headlineLarge: GoogleFonts.amiri(
+      headlineLarge: GoogleFonts.notoKufiArabic(
         fontSize: 32,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      headlineMedium: GoogleFonts.amiri(
+      headlineMedium: GoogleFonts.notoKufiArabic(
         fontSize: 28,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      headlineSmall: GoogleFonts.amiri(
+      headlineSmall: GoogleFonts.notoKufiArabic(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      titleLarge: GoogleFonts.amiri(
+      titleLarge: GoogleFonts.notoKufiArabic(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      titleMedium: GoogleFonts.amiri(
+      titleMedium: GoogleFonts.notoKufiArabic(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      titleSmall: GoogleFonts.amiri(
+      titleSmall: GoogleFonts.notoKufiArabic(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      bodyLarge: GoogleFonts.amiri(
+      bodyLarge: GoogleFonts.notoKufiArabic(
         fontSize: 20,
         height: 1.8,
         color: colorScheme.onSurface,
       ),
-      bodyMedium: GoogleFonts.amiri(
+      bodyMedium: GoogleFonts.notoKufiArabic(
         fontSize: 16,
         height: 1.6,
         color: colorScheme.onSurface,
       ),
-      bodySmall: GoogleFonts.amiri(
+      bodySmall: GoogleFonts.notoKufiArabic(
         fontSize: 14,
         height: 1.5,
         color: colorScheme.onSurfaceVariant,
       ),
-      labelLarge: GoogleFonts.amiri(
+      labelLarge: GoogleFonts.notoKufiArabic(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurface,
       ),
-      labelMedium: GoogleFonts.amiri(
+      labelMedium: GoogleFonts.notoKufiArabic(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurfaceVariant,
       ),
-      labelSmall: GoogleFonts.amiri(
+      labelSmall: GoogleFonts.notoKufiArabic(
         fontSize: 11,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurfaceVariant,
