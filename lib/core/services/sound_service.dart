@@ -3,11 +3,21 @@ import 'package:flutter/services.dart';
 
 /// خدمة المؤثرات الصوتية
 class SoundService {
-  SoundService._();
+  SoundService._() {
+    // تهيئة المشغلات مع وضع الكمون المنخفض
+    _successPlayer.setPlayerMode(PlayerMode.lowLatency);
+    _errorPlayer.setPlayerMode(PlayerMode.lowLatency);
+    _celebrationPlayer.setPlayerMode(PlayerMode.lowLatency);
+    _tapPlayer.setPlayerMode(PlayerMode.lowLatency);
+  }
 
   static final SoundService instance = SoundService._();
 
-  final AudioPlayer _player = AudioPlayer();
+  // استخدام مشغلات منفصلة لكل صوت لتجنب التأخير
+  final AudioPlayer _successPlayer = AudioPlayer();
+  final AudioPlayer _errorPlayer = AudioPlayer();
+  final AudioPlayer _celebrationPlayer = AudioPlayer();
+  final AudioPlayer _tapPlayer = AudioPlayer();
   bool _isEnabled = true;
 
   /// تفعيل/تعطيل الأصوات
@@ -23,15 +33,12 @@ class SoundService {
     if (!_isEnabled) return;
 
     try {
-      // استخدام صوت من URL مباشر للتوافق مع جميع المنصات
-      await _player.play(UrlSource(
-        'https://actions.google.com/sounds/v1/alarms/beep_short.ogg',
-      ));
-      // يمكن استبداله بملف صوتي مخصص:
-      // await _player.play(AssetSource('sounds/success.mp3'));
+      // إيقاف أي صوت سابق وتشغيل الجديد فوراً
+      await _successPlayer.stop();
+      await _successPlayer.play(AssetSource('sounds/correct_answer.wav'));
     } catch (e) {
       // Fallback to system sound
-      await SystemSound.play(SystemSoundType.click);
+      // await SystemSound.play(SystemSoundType.click);
     }
   }
 
@@ -40,14 +47,12 @@ class SoundService {
     if (!_isEnabled) return;
 
     try {
-      await _player.play(UrlSource(
-        'https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg',
-      ));
-      // يمكن استبداله بملف صوتي مخصص:
-      // await _player.play(AssetSource('sounds/error.mp3'));
+      // إيقاف أي صوت سابق وتشغيل الجديد فوراً
+      await _errorPlayer.stop();
+      await _errorPlayer.play(AssetSource('sounds/wrong_answer.mp3'));
     } catch (e) {
       // Fallback to system sound
-      await SystemSound.play(SystemSoundType.alert);
+      // await SystemSound.play(SystemSoundType.alert);
     }
   }
 
@@ -56,11 +61,12 @@ class SoundService {
     if (!_isEnabled) return;
 
     try {
-      await _player.play(UrlSource(
+      await _celebrationPlayer.stop();
+      await _celebrationPlayer.play(UrlSource(
         'https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg',
       ));
       // يمكن استبداله بملف صوتي مخصص:
-      // await _player.play(AssetSource('sounds/celebration.mp3'));
+      // await _celebrationPlayer.play(AssetSource('sounds/celebration.mp3'));
     } catch (e) {
       // Fallback to system sound
       await SystemSound.play(SystemSoundType.click);
@@ -72,7 +78,8 @@ class SoundService {
     if (!_isEnabled) return;
 
     try {
-      await _player.play(UrlSource(
+      await _tapPlayer.stop();
+      await _tapPlayer.play(UrlSource(
         'https://actions.google.com/sounds/v1/alarms/beep_short.ogg',
       ));
     } catch (e) {
@@ -84,7 +91,12 @@ class SoundService {
   /// إيقاف جميع الأصوات
   Future<void> stop() async {
     try {
-      await _player.stop();
+      await Future.wait([
+        _successPlayer.stop(),
+        _errorPlayer.stop(),
+        _celebrationPlayer.stop(),
+        _tapPlayer.stop(),
+      ]);
     } catch (e) {
       // تجاهل الأخطاء
     }
@@ -92,6 +104,9 @@ class SoundService {
 
   /// تنظيف الموارد
   void dispose() {
-    _player.dispose();
+    _successPlayer.dispose();
+    _errorPlayer.dispose();
+    _celebrationPlayer.dispose();
+    _tapPlayer.dispose();
   }
 }

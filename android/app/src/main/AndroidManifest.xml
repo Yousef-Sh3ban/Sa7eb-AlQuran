@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="sa7eb_alquran"
+        android:label="صاحب القران"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

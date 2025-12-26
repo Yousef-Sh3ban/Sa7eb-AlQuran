@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../presentation/screens/home_screen.dart';
-import '../../presentation/screens/surah_dashboard_screen.dart';
+import 'package:sa7eb_alquran/presentation/screens/home/main_navigator.dart';
+import 'package:sa7eb_alquran/presentation/screens/surah_dashboard/surah_dashboard_screen.dart';
 import '../../presentation/screens/quiz_screen.dart';
 import '../../presentation/screens/saved_questions_screen.dart';
 

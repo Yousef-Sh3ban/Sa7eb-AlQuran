@@ -13,12 +13,14 @@ class QuestionCategoryColors extends ThemeExtension<QuestionCategoryColors> {
     required this.hifzColor,
     required this.tajweedColor,
     required this.tafseerColor,
+    required this.wordMeaningColor,
     required this.generalColor,
   });
 
   final Color hifzColor;
   final Color tajweedColor;
   final Color tafseerColor;
+  final Color wordMeaningColor;
   final Color generalColor;
 
   @override
@@ -32,6 +34,7 @@ class QuestionCategoryColors extends ThemeExtension<QuestionCategoryColors> {
       hifzColor: hifzColor ?? this.hifzColor,
       tajweedColor: tajweedColor ?? this.tajweedColor,
       tafseerColor: tafseerColor ?? this.tafseerColor,
+      wordMeaningColor: wordMeaningColor ?? this.wordMeaningColor,
       generalColor: generalColor ?? this.generalColor,
     );
   }
@@ -48,6 +51,8 @@ class QuestionCategoryColors extends ThemeExtension<QuestionCategoryColors> {
       hifzColor: Color.lerp(hifzColor, other.hifzColor, t)!,
       tajweedColor: Color.lerp(tajweedColor, other.tajweedColor, t)!,
       tafseerColor: Color.lerp(tafseerColor, other.tafseerColor, t)!,
+      wordMeaningColor:
+          Color.lerp(wordMeaningColor, other.wordMeaningColor, t)!,
       generalColor: Color.lerp(generalColor, other.generalColor, t)!,
     );
   }
@@ -57,6 +62,7 @@ class QuestionCategoryColors extends ThemeExtension<QuestionCategoryColors> {
     hifzColor: Color(0xFF2E7D32), // Green 700
     tajweedColor: Color(0xFF6A1B9A), // Purple 800
     tafseerColor: Color(0xFFE65100), // Deep Orange 900
+    wordMeaningColor: Color(0xFF00838F), // Teal 800
     generalColor: Color(0xFF1565C0), // Blue 800
   );
 
@@ -65,6 +71,7 @@ class QuestionCategoryColors extends ThemeExtension<QuestionCategoryColors> {
     hifzColor: Color(0xFF66BB6A), // Green 400
     tajweedColor: Color(0xFFAB47BC), // Purple 400
     tafseerColor: Color(0xFFFF9800), // Orange 500
+    wordMeaningColor: Color(0xFF26C6DA), // Teal 400
     generalColor: Color(0xFF42A5F5), // Blue 400
   );
 }

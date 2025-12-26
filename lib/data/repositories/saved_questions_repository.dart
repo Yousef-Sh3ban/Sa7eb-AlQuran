@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../data_sources/local/database.dart';
 import '../models/question_model.dart';
 import '../../domain/entities/question_category.dart';
@@ -27,7 +29,8 @@ class SavedQuestionsRepository {
   Future<List<QuestionModel>> getSavedQuestions() async {
     final questions = await _database.getSavedQuestions();
     return questions.map((q) {
-      final optionsList = q.options.split('|||');
+      // Options are stored as JSON array string
+      final optionsList = (json.decode(q.options) as List<dynamic>).cast<String>();
       return QuestionModel(
         id: q.id,
         surahId: q.surahId,

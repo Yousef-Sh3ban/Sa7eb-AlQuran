@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'question_category_colors.dart';
 import 'app_colors.dart';
-import 'color_schemes.dart' as app_schemes;
+import 'colors_schemes.dart' as app_schemes;
 
 /// Application theme configuration.
 ///

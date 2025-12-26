@@ -9,14 +9,14 @@ class UserProgressRepository {
 
   /// Get progress for a specific question
   Future<UserProgressModel?> getProgress(String questionId) async {
-    final UserProgressData? progress =
-        await _database.getProgress(questionId);
+    final UserProgressData? progress = await _database.getProgress(questionId);
     return progress != null ? _mapToModel(progress) : null;
   }
 
   /// Get progress for multiple questions in a single query (efficient)
   Future<Map<String, UserProgressModel>> getProgressBatch(
-      List<String> questionIds) async {
+    List<String> questionIds,
+  ) async {
     final progressList = await _database.getProgressBatch(questionIds);
     return Map.fromEntries(
       progressList.map((p) => MapEntry(p.questionId, _mapToModel(p))),
@@ -34,10 +34,9 @@ class UserProgressRepository {
 
   /// Get all incorrect questions for a surah
   Future<List<String>> getIncorrectQuestionIds(int surahId) async {
-    final List<UserProgressData> incorrectProgress =
-        await (_database.select(_database.userProgress)
-              ..where((p) => p.status.equals(1)))
-            .get();
+    final List<UserProgressData> incorrectProgress = await (_database.select(
+      _database.userProgress,
+    )..where((p) => p.status.equals(1))).get();
     return incorrectProgress.map((p) => p.questionId).toList();
   }
 
@@ -50,8 +49,9 @@ class UserProgressRepository {
     int correct = 0;
 
     for (final String questionId in questionIds) {
-      final UserProgressData? progress =
-          await _database.getProgress(questionId);
+      final UserProgressData? progress = await _database.getProgress(
+        questionId,
+      );
       if (progress != null) {
         attempts++;
         if (progress.status == 2) {
@@ -66,7 +66,7 @@ class UserProgressRepository {
   /// Get overall statistics across all questions
   Future<Map<String, int>> getOverallStats() async {
     final allProgress = await _database.select(_database.userProgress).get();
-    
+
     int totalQuestions = 0;
     int answeredQuestions = allProgress.length;
     int correctAnswers = 0;
@@ -91,9 +91,9 @@ class UserProgressRepository {
   /// Get completion percentage for a specific surah
   Future<double> getSurahCompletionPercentage(int surahId) async {
     // Get all questions for this surah
-    final questions = await (_database.select(_database.questions)
-          ..where((q) => q.surahId.equals(surahId)))
-        .get();
+    final questions = await (_database.select(
+      _database.questions,
+    )..where((q) => q.surahId.equals(surahId))).get();
 
     if (questions.isEmpty) return 0.0;
 
@@ -116,5 +116,20 @@ class UserProgressRepository {
       attempts: data.attempts,
       lastAttempt: data.lastAttempt,
     );
+  }
+
+  /// Reset progress for all questions in a specific surah
+  Future<void> resetSurahProgress(int surahId) async {
+    // Get all questions for this surah
+    final questions = await (_database.select(
+      _database.questions,
+    )..where((q) => q.surahId.equals(surahId))).get();
+
+    // Delete progress for each question
+    for (final question in questions) {
+      await (_database.delete(
+        _database.userProgress,
+      )..where((p) => p.questionId.equals(question.id))).go();
+    }
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../data/repositories/surah_repository.dart';
 import '../../data/data_sources/local/database.dart';
 import '../../data/repositories/saved_questions_repository.dart';
 import '../../data/models/question_model.dart';
 import '../widgets/question_category_badge.dart';
+import 'saved_question_view_screen.dart';
 
 /// Screen to display saved questions
 class SavedQuestionsScreen extends StatefulWidget {
@@ -14,14 +16,29 @@ class SavedQuestionsScreen extends StatefulWidget {
 
 class _SavedQuestionsScreenState extends State<SavedQuestionsScreen> {
   late final SavedQuestionsRepository _repository;
+  final _surahRepo = SurahRepository.instance;
   List<QuestionModel> _savedQuestions = [];
   bool _isLoading = true;
+  Map<String, String> _surahNames = {};
 
   @override
   void initState() {
     super.initState();
-    _repository = SavedQuestionsRepository(AppDatabase());
-    _loadSavedQuestions();
+    final database = AppDatabase();
+    _repository = SavedQuestionsRepository(database);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await _loadSurahNames();
+    await _loadSavedQuestions();
+  }
+
+  Future<void> _loadSurahNames() async {
+    final surahs = await _surahRepo.getAllSurahs();
+    setState(() {
+      _surahNames = {for (var s in surahs) s.id.toString(): s.nameArabic};
+    });
   }
 
   Future<void> _loadSavedQuestions() async {
@@ -42,9 +59,9 @@ class _SavedQuestionsScreenState extends State<SavedQuestionsScreen> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في تحميل الأسئلة: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('خطأ في تحميل الأسئلة: $e')));
       }
     }
   }
@@ -60,9 +77,9 @@ class _SavedQuestionsScreenState extends State<SavedQuestionsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('خطأ: $e')));
       }
     }
   }
@@ -72,127 +89,148 @@ class _SavedQuestionsScreenState extends State<SavedQuestionsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('الأسئلة المحفوظة'),
+        forceMaterialTransparency: true,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _savedQuestions.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.bookmark_border,
-                        size: 80,
-                        color: Colors.grey.shade400,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'لا توجد أسئلة محفوظة',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Colors.grey.shade600,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'احفظ الأسئلة المهمة أثناء الاختبار',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey.shade500,
-                            ),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.bookmark_border,
+                    size: 80,
+                    color: Colors.grey.shade400,
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadSavedQuestions,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _savedQuestions.length,
-                    itemBuilder: (context, index) {
-                      final question = _savedQuestions[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  QuestionCategoryBadge(
-                                      category: question.category),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'سورة ${question.surahId}',
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                  const Spacer(),
-                                  IconButton(
-                                    onPressed: () =>
-                                        _unsaveQuestion(question.id),
-                                    icon: const Icon(Icons.delete_outline),
-                                    color: Colors.red.shade400,
-                                    tooltip: 'حذف',
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                question.questionText,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 12),
-                              ...question.options.asMap().entries.map((entry) {
-                                final idx = entry.key;
-                                final option = entry.value;
-                                final isCorrect =
-                                    idx == question.correctAnswerIndex;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        isCorrect
-                                            ? Icons.check_circle
-                                            : Icons.circle_outlined,
-                                        size: 20,
-                                        color: isCorrect
-                                            ? Colors.green
-                                            : Colors.grey,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          option,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                color: isCorrect
-                                                    ? Colors.green.shade700
-                                                    : null,
-                                                fontWeight: isCorrect
-                                                    ? FontWeight.bold
-                                                    : null,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                  const SizedBox(height: 16),
+                  Text(
+                    'لا توجد أسئلة محفوظة',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'احفظ الأسئلة المهمة أثناء الاختبار',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadSavedQuestions,
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(
+                  decelerationRate: ScrollDecelerationRate.fast,
                 ),
+                padding: const EdgeInsets.all(16),
+                itemCount: _savedQuestions.length,
+                itemBuilder: (context, index) {
+                  final question = _savedQuestions[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: InkWell(
+                      onTap: () async {
+                        if (!mounted) return;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SavedQuestionViewScreen(
+                              question: question,
+                              surahName:
+                                  _surahNames[question.surahId.toString()] ??
+                                  'غير معروف',
+                            ),
+                          ),
+                        ).then((_) => _loadSavedQuestions());
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                QuestionCategoryBadge(
+                                  category: question.category,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${_surahNames[question.surahId.toString()] ?? question.surahId}',
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w200,
+                                        fontFamily: 'SurahNameMadina',
+                                        fontSize: 38,
+                                      ),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  onPressed: () => _unsaveQuestion(question.id),
+                                  icon: const Icon(Icons.delete_outline),
+                                  color: Colors.red.shade400,
+                                  tooltip: 'حذف',
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              question.questionText,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            // const SizedBox(height: 12),
+                            // ...question.options.asMap().entries.map((entry) {
+                            //   final idx = entry.key;
+                            //   final option = entry.value;
+                            //   final isCorrect =
+                            //       idx == question.correctAnswerIndex;
+                            //   return Padding(
+                            //     padding: const EdgeInsets.only(bottom: 8),
+                            //     child: Row(
+                            //       children: [
+                            //         Icon(
+                            //           isCorrect
+                            //               ? Icons.check_circle
+                            //               : Icons.circle_outlined,
+                            //           size: 20,
+                            //           color: isCorrect
+                            //               ? Colors.green
+                            //               : Colors.grey,
+                            //         ),
+                            //         const SizedBox(width: 8),
+                            //         Expanded(
+                            //           child: Text(
+                            //             option,
+                            //             style: Theme.of(context)
+                            //                 .textTheme
+                            //                 .bodyMedium
+                            //                 ?.copyWith(
+                            //                   color: isCorrect
+                            //                       ? Colors.green.shade700
+                            //                       : null,
+                            //                   fontWeight: isCorrect
+                            //                       ? FontWeight.bold
+                            //                       : null,
+                            //                 ),
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   );
+                            // }).toList(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }

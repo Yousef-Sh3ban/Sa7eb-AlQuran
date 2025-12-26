@@ -9,6 +9,7 @@ enum QuestionCategory {
   hifz,
   tajweed,
   tafseer,
+  wordMeaning,
   general;
 
   /// Returns the Arabic display name for the category.
@@ -20,6 +21,8 @@ enum QuestionCategory {
         return 'تجويد';
       case QuestionCategory.tafseer:
         return 'تفسير';
+      case QuestionCategory.wordMeaning:
+        return 'معاني';
       case QuestionCategory.general:
         return 'عام';
     }
@@ -34,6 +37,8 @@ enum QuestionCategory {
         return '🎵';
       case QuestionCategory.tafseer:
         return '💡';
+      case QuestionCategory.wordMeaning:
+        return '📝';
       case QuestionCategory.general:
         return '📚';
     }
@@ -41,8 +46,12 @@ enum QuestionCategory {
 
   /// Creates a category from a string value.
   static QuestionCategory fromString(String value) {
+    final normalized = value.toLowerCase();
+    if (normalized == 'word_meaning') {
+      return QuestionCategory.wordMeaning;
+    }
     return QuestionCategory.values.firstWhere(
-      (e) => e.name == value.toLowerCase(),
+      (e) => e.name.toLowerCase() == normalized,
       orElse: () => QuestionCategory.general,
     );
   }

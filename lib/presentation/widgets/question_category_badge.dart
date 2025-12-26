@@ -40,6 +40,7 @@ class QuestionCategoryBadge extends StatelessWidget {
       QuestionCategory.hifz => colors.hifzColor,
       QuestionCategory.tajweed => colors.tajweedColor,
       QuestionCategory.tafseer => colors.tafseerColor,
+      QuestionCategory.wordMeaning => colors.wordMeaningColor,
       QuestionCategory.general => colors.generalColor,
     };
   }
